@@ -20,9 +20,6 @@
   <div class="card-body">
     {% for product in cart_products %}
     {{product.name}}
-    {% if product.is_sale %}
-        ${{ product.sale_price }}
-    {% else %}
     ${{ product.price }}
      <br/><br/>
     <small>Quantitiy:
@@ -34,12 +31,14 @@
 
 
  <br/><br/>
-    {% endif %}
     {% endfor %}
      <br/><br/>
-     Total: ${{ totals }}
-      <br/><br/>
-      <a href="{% url 'cart_summary'%}" class="btn btn-sm btn-outline-secondary">Update Items</a>
+     <hr>
+     <strong>Subtotal: ${{ totals }}</strong><br/>
+     <strong>Shipping Fees: ${{ shipping_fees }}</strong><br/>
+     <strong>Total Amount: ${{ total_with_shipping }}</strong>
+     <br/><br/>
+     <a href="{% url 'cart_summary'%}" class="btn btn-sm btn-outline-secondary">Update Items</a>
   </div>
 </div>
  <br/><br/> <br/><br/>
@@ -48,14 +47,14 @@
     Shipping Info
   </div>
   <div class="card-body">
-    <form method="POST" action="{% url 'billing_info' %}">
+    <form method="POST" action="{% url 'process_order' %}">
       {% csrf_token %}
     {{ shipping_form.as_p }}
   </div>
 </div>
  <br/><br/> 
 
-<button type="submit" class="btn btn-secondary">Continue To Billing</button>
+<button type="submit" class="btn btn-secondary">Complete Order</button>
 </form>
                 </div>
             </div>

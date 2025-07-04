@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .cart import Cart
 from store.models import Product
 from django.http import JsonResponse
@@ -24,13 +24,16 @@ def cart_add(request):
          #lookup product in DB
         product=get_object_or_404(Product,id=product_id)
         #Save to session
-        cart.add(product=product, quantity=product_qty)
+        result= cart.add(product=product, quantity=product_qty)
         #get cart quantity
-        cart_quantity=cart.__len__()
-        #Return response
-        response=JsonResponse({'qty': cart_quantity})
-        messages.success(request,("Product added to the cart"))
-        #response=JsonResponse({'Product Name': product.name})
+        if result['success']:
+         cart_quantity=cart.__len__()
+         #Return response
+         response=JsonResponse({'qty': cart_quantity})
+         messages.success(request, result['message'])
+         #response=JsonResponse({'Product Name': product.name})
+        else:  
+            response=JsonResponse({'error': result['message']}, status=400)
         return response
 
 def cart_delete(request):
@@ -39,8 +42,9 @@ def cart_delete(request):
         product_id= int(request.POST.get('product_id'))
         #call delete function in cart
         cart.delete(product=product_id)
-        response= JsonResponse({'product': product_id})
-        messages.success(request,("Item deleted successfully!"))
+        cart_quantity = cart.__len__()
+        response= JsonResponse({'product': product_id, 'qty': cart_quantity})
+        messages.success(request, "Item deleted successfully!")
         return response
     
 
@@ -50,7 +54,8 @@ def cart_update(request):
         product_id= int(request.POST.get('product_id'))
         product_qty=int(request.POST.get('product_qty'))
 
-        cart.update(product=product_id, quantity=product_qty)
-        response= JsonResponse({'qty': product_qty})
-        messages.success(request,("Your cart has been updated"))
+        result = cart.update(product=product_id, quantity=product_qty)
+        cart_quantity = cart.__len__()
+        response= JsonResponse({'qty': cart_quantity})
+        messages.success(request, "Your cart has been updated")
         return response

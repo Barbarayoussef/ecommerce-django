@@ -1,33 +1,16 @@
 from django.shortcuts import redirect, render
-from .models import Product , Category, Profile
+from .models import Product , Profile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm, ProductForm
+from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm,ProductForm
 from django import forms
 from payment.forms import ShippingForm
 from payment.models import ShippingAddress
 from django.db.models import Q
 from cart.cart import Cart
 import json
-
-
-def edit_product(request, pk):
-    if request.user.is_authenticated and request.user.is_superuser:
-        product = Product.objects.get(id=pk)
-        if request.method == 'POST':
-            form = ProductForm(request.POST, request.FILES, instance=product)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Product updated successfully!")
-                return redirect('product', pk=product.id)
-        else:
-            form = ProductForm(instance=product)
-        return render(request, 'edit_product.html', {'form': form, 'product': product})
-    else:
-        messages.error(request, "You do not have permission to edit this product.")
-        return redirect('home')
 
 
 def delete_product(request, pk):
@@ -58,25 +41,6 @@ def add_product(request):
     else:
         messages.error(request, "You must be a superuser to access this page.")
         return redirect('home')
-
-
-
-def search(request):
-    #Determine if they filled out the form
-    if request.method == "POST":
-        searched= request.POST['searched']
-        #Query Products in DB
-        searched=Product.objects.filter(Q(name__icontains=searched) | Q(description__icontains=searched))
-        #test for null
-        if not searched:
-          messages.success(request,("That product does not exist.. Please try again with different one"))
-          return render(request,"search.html",{})
-        else:
-         return render(request,"search.html",{'searched': searched})
-    else:
-       return render(request,"search.html",{})
- 
-
 
 
 
@@ -143,26 +107,6 @@ def update_user(request):
         messages.success(request,("You must be logged in to access this page"))
         return redirect('home')
 
-
-
-
-def category_summary(request):
-    categories = Category.objects.all()
-    return render(request, 'category_summary.html',{"categories" : categories}) 
-
-
-def category(request, foo):
-    #Replace Hyphens with Spaces
-    foo=foo.replace('-',' ')
-    # Grap the category from the url
-    try:
-        #look up the category
-        category= Category.objects.get(name = foo)
-        products = Product.objects.filter(Category=category)
-        return render(request, 'category.html',{'products': products, 'category': category }) 
-    except:
-         messages.success(request,("That category does not exist"))
-         return redirect('home')
     
 
 def product(request,pk):
@@ -218,13 +162,27 @@ def register_user(request):
     if request.method=="POST":
         form=SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
+            # Save the user first
+            user = form.save()
+            
+            # Get the balance from the form
+            balance = form.cleaned_data.get('balance', 0.00)
+            
+            # Update the user's profile with the balance
+            try:
+                profile = Profile.objects.get(user=user)
+                profile.balance = balance
+                profile.save()
+            except Profile.DoesNotExist:
+                # Create profile if it doesn't exist (shouldn't happen due to signal)
+                Profile.objects.create(user=user, balance=balance)
+            
             username=form.cleaned_data['username']
             password=form.cleaned_data['password1']
             # log in user
             user=authenticate(username=username, password=password)
             login(request,user)
-            messages.success(request,("Please Fill out your info below"))
+            messages.success(request,(f"Registration successful! Your balance is ${balance:.2f}"))
             return redirect('update_info')
         else:
             messages.success(request,("There is a problem, please try again"))

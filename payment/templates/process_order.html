@@ -20,16 +20,12 @@
   <div class="card-body">
     {% for product in cart_products %}
     {{product.name}}
-    {% if product.is_sale %}
-        ${{ product.sale_price }}
-    {% else %}
     ${{ product.price }}
      <br/><br/>
     <small>Quantitiy:
     {% for key, value in quantities.items %}
             {% if key == product.id|slugify %}
                 {{ value }}
-            {% endif %}
     {% endfor %}</small>
 
 

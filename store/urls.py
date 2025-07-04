@@ -12,11 +12,7 @@ urlpatterns = [
   path('update_info/',views.update_info,name='update_info'),
    path('update_password/',views.update_password,name='update_password'),
   path('product/<int:pk>',views.product,name='product'),
-  path('category/<str:foo>',views.category,name='category'),
-  path('category_summary/',views.category_summary,name='category_summary'),
-  path('search/',views.search, name='search'),
   path('add-product/', views.add_product, name='add_product'),
-  path('edit_product/<int:pk>/', views.edit_product, name='edit_product'),
   path('delete_product/<int:pk>/', views.delete_product, name='delete_product'),
 
 

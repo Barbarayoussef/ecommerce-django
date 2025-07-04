@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPasswordForm
 from django import forms
 from .models import Profile,Product
+from django.forms import DateInput
 
 
 
@@ -60,6 +61,7 @@ class SignUpForm(UserCreationForm):
 	email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))
 	first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'First Name'}))
 	last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Last Name'}))
+	balance = forms.DecimalField(label="", max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Initial Balance (e.g., 100.00)'}), required=False, initial=0.00)
 
 	class Meta:
 		model = User
@@ -86,14 +88,17 @@ class SignUpForm(UserCreationForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'price', 'Category', 'description', 'image', 'is_sale', 'sale_price']
+        fields = ['name', 'price', 'quantity', 'is_expirable', 'expiry_date', 'is_shippable', 'weight']
+        widgets = {
+            'expiry_date': DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        }
 
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
         self.fields['name'].widget.attrs['class'] = 'form-control'
         self.fields['price'].widget.attrs['class'] = 'form-control'
-        self.fields['Category'].widget.attrs['class'] = 'form-control'
-        self.fields['description'].widget.attrs['class'] = 'form-control'
-        self.fields['image'].widget.attrs['class'] = 'form-control'
-        self.fields['is_sale'].widget.attrs['class'] = 'form-check-input'
-        self.fields['sale_price'].widget.attrs['class'] = 'form-control'
+        self.fields['quantity'].widget.attrs['class'] = 'form-control'
+        self.fields['is_expirable'].widget.attrs['class'] = 'form-check-input'
+        self.fields['is_shippable'].widget.attrs['class'] = 'form-check-input'
+        self.fields['weight'].widget.attrs['class'] = 'form-control'
+        

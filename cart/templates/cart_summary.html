@@ -15,25 +15,12 @@
             {% for product in cart_products %}
               <div class="card mb-3">
   <div class="row g-0">
-    <div class="col-md-4">
-      <img src="{{product.image.url}}" class="img-fluid rounded-start" alt="...">
-    </div>
+    
     <div class="col-md-8">
       <div class="card-body">
       <center>
         <h5 class="card-title">{{product.name}}</h5>
-        <p class="card-text">{{product.description}}</p>
-        {% if product.is_sale %}
-        <!-- Product price-->
-                                     <strike>
-                                    ${{ product.price }}
-                                    </strike>
-                                    &nbsp;${{ product.sale_price }}
-                                    
-        {% else %}
         ${{ product.price }}
-
-        {% endif%}
         <br/><br/><br/>
         <div class="row justify-content-center">
           <div class="col-md-2">Quantitiy:</div>
@@ -100,6 +87,8 @@
                         action: 'post'
                     },
                     success:function(json){
+                        // Update cart count in navbar
+                        document.getElementById('cart_quantity').textContent = json.qty;
                         location.reload();
                     },
 
@@ -125,6 +114,8 @@
                         action: 'post'
                     },
                     success:function(json){
+                        // Update cart count in navbar
+                        document.getElementById('cart_quantity').textContent = json.qty;
                         location.reload();
                     },
 

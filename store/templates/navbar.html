@@ -6,7 +6,7 @@
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'home'%}">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
-                                                <li class="nav-item"><a class="nav-link" href="{% url 'search' %}">Search</a></li>
+                                              
                         {% if user.is_authenticated %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
                         <li class="nav-item dropdown">
@@ -32,20 +32,12 @@
                         <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
                         {% endif %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{% url 'category_summary' %}">All Products</a></li>
-                                <li><hr class="dropdown-divider" /></li>
-                                <li><a class="dropdown-item" href="{% url 'category' 'Cell-phone' %}">Cell phones</a></li>
-                                <li><a class="dropdown-item" href="{% url 'category' 'Books' %}">Books</a></li>
-                            </ul>
-                        </li>
+                        
                     </ul>
                     <form class="d-flex">
                         <a href="{% url 'cart_summary' %}"class="btn btn-outline-dark"><i class="bi-cart-fill me-1"></i>
                             Cart
-                            <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart_quantity">{{ cart|length }}</span></a>
+                            <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart_quantity">{{ cart_count }}</span></a>
                     </form>
                 </div>
             </div>
